@@ -10,4 +10,3 @@ routes.use("/dishes", dishesRouter)
 
 module.exports = routes;
 
-// PAREI NO "EXIBINDO NOTA"
