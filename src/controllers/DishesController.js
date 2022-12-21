@@ -95,6 +95,33 @@ class DishesController {
     return res.status(200).json(dishesWithIngredients)
   }
 
+  async update(req, res) {
+
+    const { title, description, category, price, ingredients } = req.body
+    const { id } = req.params
+
+    const dish = await knex("dishes").where({ id }).first()
+
+    dish.title = title ?? dish.title
+    dish.description = description ?? dish.description
+    dish.category = category ?? dish.category
+    dish.price = price ?? dish.price
+
+    const insertIngredients = ingredients.map(name =>({
+      name,
+      dish_id: dish.id
+    }))
+
+    await knex("dishes").where({ id }).update(dish)
+    await knex("dishes").where({ id }).update("updated_at", knex.fn.now())
+
+    await knex("ingredients").where({dish_id: id}).delete()
+    await knex("ingredients").where({dish_id: id}).insert(insertIngredients)
+
+    return res.status(200).json('Prato atualizado com sucesso!')
+
+  }
+
 }
 
 module.exports = DishesController;
