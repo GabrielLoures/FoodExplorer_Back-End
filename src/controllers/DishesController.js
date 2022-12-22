@@ -1,4 +1,6 @@
 const knex = require("../database/knex")
+const AppError = require("../utils/AppError")
+const DiskStorage = require("../providers/DiskStorage")
 
 class DishesController {
 
@@ -6,11 +8,17 @@ class DishesController {
 
     const { title, description, category, price, ingredients } = req.body
 
+    const diskStorage = new DiskStorage()
+
+    const dishFilename = req.file.filename
+    const filename = await diskStorage.saveFile(dishFilename)
+
     const dish_id = await knex("dishes").insert({
       title,
       description,
       category,
-      price
+      price,
+      image: filename
     })
 
     const ingredientsInsert = ingredients.map(ingredient => {
@@ -99,13 +107,28 @@ class DishesController {
 
     const { title, description, category, price, ingredients } = req.body
     const { id } = req.params
+    const image = req.file.filename
+
+    const diskStorage = new DiskStorage()
 
     const dish = await knex("dishes").where({ id }).first()
+
+    if(!dish) {
+      throw new AppError("Esse prato não está cadastrado!")
+    }
+
+    if(dish.image) {
+      await diskStorage.deleteFile(dish.image)
+    }
+
+    const filename = await diskStorage.saveFile(image)
 
     dish.title = title ?? dish.title
     dish.description = description ?? dish.description
     dish.category = category ?? dish.category
     dish.price = price ?? dish.price
+    dish.image = filename
+    
 
     const insertIngredients = ingredients.map(name =>({
       name,
@@ -118,7 +141,7 @@ class DishesController {
     await knex("ingredients").where({dish_id: id}).delete()
     await knex("ingredients").where({dish_id: id}).insert(insertIngredients)
 
-    return res.status(200).json('Prato atualizado com sucesso!')
+    return res.status(201).json('Prato atualizado com sucesso!')
 
   }
 
