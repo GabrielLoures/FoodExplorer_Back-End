@@ -8,7 +8,7 @@ const ensureAuthenticated = require("../middlewares/ensureAuthenticated")
 const ensureAuthenticatedAdmin = require("../middlewares/ensureAuthenticatedAdmin")
 
 const dishesRouter = Router();
-const upload = multer()
+const upload = multer(uploadConfig.MULTER)
 
 const dishesController = new DishesController();
 

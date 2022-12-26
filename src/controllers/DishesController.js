@@ -10,8 +10,12 @@ class DishesController {
 
     const diskStorage = new DiskStorage()
 
-    const dishFilename = req.file.filename
-    const filename = await diskStorage.saveFile(dishFilename)
+    const image = req.file.filename
+    const filename = await diskStorage.saveFile(image)
+
+    if (!title || !price || !description || !image || !type) {
+      throw new AppError('Por favor, preencha todos os campos para efetuar o cadastro')
+    }
 
     const dish_id = await knex("dishes").insert({
       title,
@@ -130,8 +134,8 @@ class DishesController {
     dish.image = filename
     
 
-    const insertIngredients = ingredients.map(name =>({
-      name,
+    const insertIngredients = ingredients.map(ingredient =>({
+      name: ingredient,
       dish_id: dish.id
     }))
 
