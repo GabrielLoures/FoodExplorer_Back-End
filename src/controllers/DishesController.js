@@ -7,13 +7,13 @@ class DishesController {
   async create(req, res) {
 
     const { title, description, category, price, ingredients } = req.body
+    const imageFilename = req.file.filename
 
     const diskStorage = new DiskStorage()
 
-    const image = req.file.filename
-    const filename = await diskStorage.saveFile(image)
+    const filename = await diskStorage.saveFile(imageFilename)
 
-    if (!title || !price || !description || !image || !type) {
+    if (!title || !price || !description || !category) {
       throw new AppError('Por favor, preencha todos os campos para efetuar o cadastro')
     }
 
