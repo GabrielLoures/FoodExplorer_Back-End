@@ -2,10 +2,67 @@ const knex = require("../database/knex")
 const AppError = require("../utils/AppError")
 const DiskStorage = require("../providers/DiskStorage")
 
+function ingredientImg(name) {
+  switch (name) {
+    case 'alface':
+      return 'alface.png'
+    case 'ameixa':
+      return 'ameixa.png'
+    case 'amêndoas':
+      return 'amendoas.png'
+    case 'aniz':
+      return 'aniz.png'
+    case 'café':
+      return 'cafe.png'
+    case 'camarão':
+      return 'camareo.png'
+    case 'canela':
+      return 'canela.png'
+    case 'damasco':
+      return 'damasco.png'
+    case 'farinha':
+      return 'farinha.png'
+    case 'gelo':
+      return 'gelo.png'
+    case 'limão':
+      return 'limao.png'
+    case 'maçã':
+      return 'maca.png'
+    case 'maracujá':
+      return 'maracuja.png'
+    case 'massa':
+      return 'massa.png'
+    case 'pão naan':
+      return 'naan.png'
+    case 'ovo':
+      return 'ovo.png'
+    case 'pão':
+      return 'pao.png'
+    case 'pepino':
+      return 'pepino.png'
+    case 'pêssego':
+      return 'pessego.png'
+    case 'pesto':
+      return 'pesto.png'
+    case 'presunto':
+      return 'presunto.png'
+    case 'rabanete':
+      return 'rabanete.png'
+    case 'rúcula':
+      return 'rucula.png'
+    case 'tomate':
+      return 'tomate.png'
+    case 'whiskey':
+      return 'whiskey.png'
+    default:
+      return 'default'
+  }
+}
+
 class DishesController {
 
   async create(req, res) {
-
+    
     const { title, description, category, price, ingredients } = req.body
     const imageFilename = req.file.filename
 
@@ -13,7 +70,7 @@ class DishesController {
 
     const filename = await diskStorage.saveFile(imageFilename)
 
-    if (!title || !price || !description || !category) {
+    if (!title || !price || !description || !category || !filename) {
       throw new AppError('Por favor, preencha todos os campos para efetuar o cadastro')
     }
 
@@ -29,6 +86,7 @@ class DishesController {
       
       return {
         dish_id,
+        image: ingredientImg(ingredient),
         name: ingredient
       }
 
@@ -136,6 +194,7 @@ class DishesController {
 
     const insertIngredients = ingredients.map(ingredient =>({
       name: ingredient,
+      image: ingredientImg(ingredient),
       dish_id: dish.id
     }))
 
