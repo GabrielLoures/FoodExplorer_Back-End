@@ -1,8 +1,9 @@
-require("express-async-errors");
+require("express-async-errors")
+require("dotenv/config")
 
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+const express = require('express')
+const cors = require('cors')
+const path = require('path')
 const AppError = require("./utils/AppError")
 const uploadConfig = require("./configs/upload")
 
@@ -37,7 +38,7 @@ app.use((error, req, res, next) => {
   })
 })
 
-const PORT = 3333;
+const PORT = process.env.PORT || 3333
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })

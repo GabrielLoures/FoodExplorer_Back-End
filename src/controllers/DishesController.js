@@ -15,7 +15,7 @@ function ingredientImg(name) {
     case 'café':
       return 'cafe.png'
     case 'camarão':
-      return 'camareo.png'
+      return 'camarao.png'
     case 'canela':
       return 'canela.png'
     case 'damasco':
@@ -82,15 +82,29 @@ class DishesController {
       image: filename
     })
 
-    const ingredientsInsert = ingredients.map(ingredient => {
-      
-      return {
-        dish_id,
-        image: ingredientImg(ingredient),
-        name: ingredient
-      }
+    const oneIngredient = typeof(ingredients) === 'string'
 
-    })
+    let ingredientsInsert
+
+    if (oneIngredient) {
+      ingredientsInsert = {
+        dish_id,
+        image: ingredientImg(ingredients),
+        name: ingredients
+      }
+    } else {
+      
+        ingredientsInsert = ingredients.map(ingredient => {
+        
+        return {
+          dish_id,
+          image: ingredientImg(ingredient),
+          name: ingredient
+        }
+    
+      })
+    }
+    
 
     await knex("ingredients").insert(ingredientsInsert)
 
@@ -174,10 +188,6 @@ class DishesController {
     const diskStorage = new DiskStorage()
 
     const dish = await knex("dishes").where({ id }).first()
-
-    if(!dish) {
-      throw new AppError("Esse prato não está cadastrado!")
-    }
 
     if(dish.image) {
       await diskStorage.deleteFile(dish.image)
